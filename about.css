@@ -1,0 +1,14 @@
+p {
+	color: #a0c8f0;
+}
+h1{
+color: #a0c8f0;
+}body{
+     width: 100%;
+     max-width: 1400px;
+     display: block;
+     margin: auto;
+     min-height: 100vh;
+     background: #060606;
+     font-family: sans-serif;
+ }
