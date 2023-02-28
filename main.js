@@ -1,4 +1,4 @@
-// База данных
+
 let listData = [{
         name: 'Олег',
         surename: 'Иванович',
@@ -39,7 +39,7 @@ let listData = [{
 let sortColumnFlag = 'fio',
     sortDirFlag = true
 
-// Создание элементов
+
 const $app = document.getElementById('app'),
     $addForm = document.getElementById('add-form'),
     $nameInp = document.getElementById('add-form__name-inp'),
@@ -81,7 +81,7 @@ $table.append($tableHead)
 $table.append($tableBody)
 $app.append($table)
 
-// Создание Tr одного пользователя
+
 function createUserTr(oneUser) {
     const $userTr = document.createElement('tr'),
         $userFIO = document.createElement('th'),
@@ -102,19 +102,19 @@ function createUserTr(oneUser) {
     return $userTr
 }
 
-// Фильтрация 
+
 function filter(arr, prop, value) {
     return arr.filter(function(oneUser) {
         if (oneUser[prop].includes(value.trim())) return true
     });
 }
 
-// Рендер
+
 function render(arrData) {
     $tableBody.innerHTML = '';
     let copyListData = [...arrData]
 
-    // Подготовка
+   
     for (const oneUser of copyListData) {
         oneUser.fio = oneUser.name + ' ' + oneUser.surename + ' ' + oneUser.lastname
         oneUser.birthYear = 2022 - oneUser.age
@@ -131,7 +131,7 @@ function render(arrData) {
 
     console.log(copyListData);
 
-    // Фильтрация
+
     if ($fioFilterInp.value.trim() !== "") {
         copyListData = filter(copyListData, 'fio', $fioFilterInp.value)
     }
@@ -140,7 +140,7 @@ function render(arrData) {
         copyListData = filter(copyListData, 'hobby', $hobbyFilterInp.value)
     }
 
-    // Отрисовка
+  
     for (const oneUser of copyListData) {
         const $newTr = createUserTr(oneUser)
         $tableBody.append($newTr)
@@ -149,11 +149,11 @@ function render(arrData) {
 
 render(listData)
 
-// Добавление
+
 $addForm.addEventListener('submit', function(event) {
     event.preventDefault()
 
-    // Валидация
+
     if ($nameInp.value.trim() == "") {
         alert('Имя не введено!')
         return
@@ -185,7 +185,7 @@ $addForm.addEventListener('submit', function(event) {
     render(listData)
 })
 
-// Клики сортировки
+
 $sortFIOBtn.addEventListener('click', function() {
     sortColumnFlag = 'fio'
     sortDirFlag = !sortDirFlag
@@ -198,7 +198,6 @@ $sortAgeBtn.addEventListener('click', function() {
     render(listData)
 })
 
-// Фильтр
 $filterForm.addEventListener('submit', function(event) {
     event.preventDefault()
 })
