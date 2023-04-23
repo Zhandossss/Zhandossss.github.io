@@ -1,24 +1,25 @@
-   <!DOCTYPE html>
-            <html>
-                <head>
-                   <meta charset="UTF-8" />
-                    <title>Users</title>
-                </head>
-                <body>
-                    <table>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                        </tr>
-                        {{range .}}
-                            <tr>
-                                <td>{{.ID}}</td>
-                                <td>{{.Name}}</td>
-                                <td>{{.Email}}</td>
-                            </tr>
-                        {{end}}
-                    </table>
-                </body>
-            </html>
-        `)
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users</title>
+</head>
+<body>
+    <h1>Users</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th></th>
+        </tr>
+        {{ range .users }}
+            <tr>
+                <td>{{ .ID }}</td>
+                <td>{{ .Name }}</td>
+                <td>{{ .Age }}</td>
+                <td><a href="/edit/{{ .ID }}">Edit</a></td>
+            </tr>
+        {{ end }}
+    </table>
+</body>
+</html>
