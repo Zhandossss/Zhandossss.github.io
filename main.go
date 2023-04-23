@@ -1,35 +1,90 @@
-// Write a program that takes a list of integers as input and returns a new list containing only the prime numbers from the original list
 package main
 
 import (
-	"fmt"
-	"math"
+    "database/sql"
+    "html/template"
+    "net/http"
+
+    "github.com/gin-gonic/gin"
+    "github.com/jmoiron/sqlx"
+    _ "github.com/lib/pq"
 )
 
-func isPrime(num int) bool {
-	if num < 2 {
-		return false
-	}
-	for i := 2; i <= int(math.Sqrt(float64(num))); i++ {
-		if num%i == 0 {
-			return false
-		}
-	}
-	return true
+type User struct {
+    ID   int    `db:"id"`
+    Name string `db:"name"`
+    Age  int    `db:"age"`
 }
 
-func filterPrimes(nums []int) []int {
-	primes := []int{}
-	for _, num := range nums {
-		if isPrime(num) {
-			primes = append(primes, num)
-		}
-	}
-	return primes
-}
+var db *sqlx.DB
 
 func main() {
-	nums := []int{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
-	primes := filterPrimes(nums)
-	fmt.Println(primes)
+    var err error
+    db, err = sqlx.Open("postgres", "user=postgres dbname=mydb sslmode=disable")
+    if err != nil {
+        panic(err)
+    }
+
+    router := gin.Default()
+    router.GET("/", showUsers)
+    router.GET("/edit/:id", editUserForm)
+    router.POST("/edit/:id", editUser)
+    router.Run(":8080")
+}
+
+func showUsers(c *gin.Context) {
+    var users []User
+    err := db.Select(&users, "SELECT * FROM users")
+    if err != nil {
+        c.AbortWithError(http.StatusInternalServerError, err)
+        return
+    }
+
+    c.HTML(http.StatusOK, "users.tmpl", gin.H{
+        "users": users,
+    })
+}
+
+func editUserForm(c *gin.Context) {
+    id := c.Param("id")
+
+    var user User
+    err := db.Get(&user, "SELECT * FROM users WHERE id=$1", id)
+    if err != nil {
+        c.AbortWithError(http.StatusInternalServerError, err)
+        return
+    }
+
+    c.HTML(http.StatusOK, "edit_user.tmpl", gin.H{
+        "user": user,
+    })
+}
+
+func editUser(c *gin.Context) {
+    id := c.Param("id")
+    name := c.PostForm("name")
+    age := c.PostForm("age")
+
+    _, err := db.Exec("UPDATE users SET name=$1, age=$2 WHERE id=$3", name, age, id)
+    if err != nil {
+        c.AbortWithError(http.StatusInternalServerError, err)
+        return
+    }
+
+    c.Redirect(http.StatusFound, "/")
+}
+
+func init() {
+    var err error
+    db, err = sqlx.Open("postgres", "user=postgres dbname=mydb sslmode=disable")
+    if err != nil {
+        panic(err)
+    }
+
+    err = db.Ping()
+    if err != nil {
+        panic(err)
+    }
+
+    template.Must(template.ParseFiles("users.tmpl", "edit_user.tmpl"))
 }
